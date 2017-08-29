@@ -84,7 +84,7 @@ function amplifier(macadr,noSpkrs){
 
 
 // Communication between processes
-
+// Saving macadr info
 ipcMain.on('save-macadr', (event, arg) => {
   /* Saving MAC addresses into speakerConfig */
   var noSpkrs = 8;
@@ -125,7 +125,33 @@ ipcMain.on('save-spkrs', (event, arg) => {
     console.log('speakers saved')
 });
 
+var xml = require('xml')
+var fs = require('fs')
+
 ipcMain.on('render-xml', (event,arg)=> {
+    console.log('render starting')
+    // Create XML object containing correct tags and data
+    // Preamble
+    fs.open('SpeakerConfig-new.xml', 'w' , function (err,file){
+      if (err) throw err;
+    })
+    fs.appendFile('SpeakerConfig-new.xml' , '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n', (err) => { if(err) throw err})
+    for (var i = 0; i < speakerConfig.amplifiers.length; i++){
+      var mac = speakerConfig.amplifiers[i].macadr
+      console.log(mac)
+      fs.appendFile('SpeakerConfig-new.xml', 
+        '   <amplifier macadr = "' + mac + '">\n', (err) => { if(err) throw err})
+        for (var j = 0; j < speakerConfig.amplifiers[i].speakers.length; j++){
+          var spk = speakerConfig.amplifiers[i].speakers[j];
+          if (spk !== undefined){
+            var string = '      <speaker number = "' + spk.number + '"  xpos = "' + spk.x + '"  ypos = "' + spk.y + '" zpos = "' + spk.z + "\"> </speaker>\n"
+              fs.appendFile('SpeakerConfig-new.xml', string, (err) => { if(err) throw err});
+          }
+        }
+      fs.appendFile('SpeakerConfig-new.xml', 
+        '   </amplifier>\n', (err) => { if(err) throw err} )
+    }
+    fs.appendFile('SpeakerConfig-new.xml' , '</config>\n', (err) => { if(err) throw err})
     console.log('xml finished rendering')
 })
 

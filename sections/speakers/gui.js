@@ -11,7 +11,11 @@ var send_spkrVals;
 // execute once when the program begins
 
 function openConfig(){
+		
+}
 
+function clearConfig(){
+	speakers.splice(0, speakers.length)
 }
 
 function setup() {
@@ -23,17 +27,23 @@ function setup() {
 	origin = [(windowWidth-20)/2,(windowHeight-20)/2] 
 	stroke(255);     // Set line drawing color to white
 	frameRate(30);
-	// var c = color('hsl(269, 100%, 95%)')
 	background(color('hsl(269, 100%, 95%)'))
 	createGrid();
+
 	// Save Button
 	send_spkrVals = createButton('save');
   	send_spkrVals.position(19, 19);
  	send_spkrVals.mousePressed(saveConfig);
+ 	// Open Button
 	open_config = createButton('open');
-  	open_config.position(19, 44);
+  	open_config.position(19, 19+25);
  	open_config.mousePressed(openConfig);
+ 	// Clear Button
+	clear_config = createButton('clear');
+  	clear_config.position(19, 19+50);
+	clear_config.mousePressed(clearConfig);
 }
+
 // The statements in draw() are executed until the 
 // program is stopped. Each statement is executed in 
 // sequence and after the last line is read, the first 
