@@ -12,9 +12,9 @@ const url = require('url')
 let mainWindow
 
 function onClosed() {
-	// Dereference the window
-	// For multiple windows store them in an array
-	mainWindow = null;
+  // Dereference the window
+  // For multiple windows store them in an array
+  mainWindow = null;
 }
 
 function createMainWindow () {
@@ -41,19 +41,19 @@ function createMainWindow () {
 }
 
 app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit();
-	}
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
 app.on('activate', () => {
-	if (!mainWindow) {
-		mainWindow = createMainWindow();
-	}
+  if (!mainWindow) {
+    mainWindow = createMainWindow();
+  }
 });
 
 app.on('ready', () => {
-	mainWindow = createMainWindow();
+  mainWindow = createMainWindow();
 });
 
 
@@ -67,6 +67,7 @@ var speakerConfig = {
   amplifiers: []                                // configuration contains one or more amplifiers
 }
 
+var speakers = [];
 // speaker object
 function speaker(x,y,z,number){
     this.x = x;
@@ -75,9 +76,10 @@ function speaker(x,y,z,number){
     this.number = number;
 }
 // amplifier object
-function amplifier(macadr){
+function amplifier(macadr,noSpkrs){
   this.speakers = [];
   this.macadr = macadr;
+  this.noSpkrs = noSpkrs
 }
 
 
@@ -85,17 +87,47 @@ function amplifier(macadr){
 
 ipcMain.on('save-macadr', (event, arg) => {
   /* Saving MAC addresses into speakerConfig */
+  var noSpkrs = 8;
   for (var i = 0; i < arg.amplifiers.length; i++) {
         var newmac = arg.amplifiers[i].macadr;
         if (speakerConfig.amplifiers[i] == null){
-          speakerConfig.amplifiers[i] = new amplifier(newmac);
+          speakerConfig.amplifiers[i] = new amplifier(newmac,noSpkrs);
         }
         else {
           speakerConfig.amplifiers[i].macadr = newmac;
         }
   }
+  console.log('DAC endpoints')
+  console.log(speakerConfig.amplifiers)
 });
 
+ipcMain.on('save-spkrs', (event, arg) => {
+  /* Saving MAC addresses into speakerConfig */
+  // Unpack speakers into array
+    for (var i = 0; i < arg.length; i++) {
+        var x = arg[i].x;
+        var y = arg[i].y;
+        var z = arg[i].z;
+        var no = arg[i].no;
+        
+        speakers.push(new speaker(x,y,z,no));
+    }
+
+    var k = 0;
+    for (var i = 0; i < speakerConfig.amplifiers.length; i++){
+        for (var j = 0; j < 8; j++){
+            console.log(speakerConfig.amplifiers[i].speakers);
+            console.log(speakers[k])
+            speakerConfig.amplifiers[i].speakers[j] = speakers[k];
+            k++;
+        }
+    }
+    console.log('speakers saved')
+});
+
+ipcMain.on('render-xml', (event,arg)=> {
+    console.log('xml finished rendering')
+})
 
 
 

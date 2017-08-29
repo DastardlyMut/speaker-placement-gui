@@ -1,13 +1,19 @@
-require("./p5.js");
+//require("./p5.js")
+// require("./p5.dom.js")
 
 /**** p5 function ****/
 var canvas;
 
 var canvas_size =[]
 var origin;
-
+var send_spkrVals;
 // The statements in the setup() function 
 // execute once when the program begins
+
+function openConfig(){
+
+}
+
 function setup() {
 	// createCanvas must be the first statement
 	canvas_size = [[(windowWidth-20),(windowHeight-20)],
@@ -20,6 +26,13 @@ function setup() {
 	// var c = color('hsl(269, 100%, 95%)')
 	background(color('hsl(269, 100%, 95%)'))
 	createGrid();
+	// Save Button
+	send_spkrVals = createButton('save');
+  	send_spkrVals.position(19, 19);
+ 	send_spkrVals.mousePressed(saveConfig);
+	open_config = createButton('open');
+  	open_config.position(19, 44);
+ 	open_config.mousePressed(openConfig);
 }
 // The statements in draw() are executed until the 
 // program is stopped. Each statement is executed in 
@@ -86,6 +99,15 @@ function mouseDragged(){
 			speakers[i].dragged()
 		}
 	}
+	else if (mouseButton == RIGHT){
+		// create new speakers
+		// if (Math.pow(speakers[speakerCount].x-mouseX) >= 20 || Math.pow(speakers[speakerCount].y-mouseY,2) >= 20 ){
+		// 	speakerCount++
+		// 	console.log('speaker ' + speakerCount)
+		// 	speakers.push(new Speaker(mouseX,mouseY,0,speakerCount))
+		// 	speakers[speakerCount-1].display();
+		// }
+	}
 }
 
 // function mouseClicked(){
@@ -121,7 +143,7 @@ function checkMouse(){
 
 
 /* Draw Grid */
-var resolution = 25;
+var resolution = 15;
 
 var grid = [];
 var rows = 0;
@@ -199,7 +221,7 @@ function Amplifier (macadr) {
 	this.macadr = macadr;
 }
 
-var speakerDiameter = 20;
+var speakerDiameter = 11;
 // Class for speaker objects
 function Speaker(x,y,z,number) {
 	this.x = x;                   // the position of the speaker on canvas
@@ -267,7 +289,7 @@ function Speaker(x,y,z,number) {
 		}
 	}
 }
-
+	
 // function deleteSpkrs(){
 // 	drawSpeakers.splice(0,drawSpeakers.length);
 // }
@@ -279,11 +301,40 @@ function Speaker(x,y,z,number) {
 // }
 
 function resizeSpkrs(){
-	speakerDiameter *= canvas_size[0][0]/canvas_size[1][0];
+	speakerDiameter *= (canvas_size[0][0]/canvas_size[1][0]);
 	console.log(speakerDiameter)
 	for (var i = 0; i < speakers.length; i++){
 		speakers[i].move()
 	}
 	// deleteSpkrs()
 	// createSpkrs()
+}
+
+/* IPC handler for sending speaker positions to main process for xml rendering */
+const {ipcRenderer} = require('electron');
+
+
+function saveConfig(){
+	// Send speaker objects to main process
+	// for (var i = 0; i < speakerConfig.amplifiers.length; i++){
+	// 	var mac = getID("mac"+i).value
+	// 	console.log(mac)
+	// 	speakerConfig.amplifiers[i].macadr = mac;
+	// 	speakerConfig.amplifiers[i].speakers = getID("no-speakers").value
+	// }
+	
+	var payload = [];
+	for (var i = 0; i < speakers.length; i++){
+		var spk = new Object();
+		spk.x = speakers[i].x;
+		spk.y = speakers[i].y;
+		spk.z = speakers[i].z;
+		spk.no = speakers[i].number;
+
+		payload.push(spk);
+	}
+
+	console.log('sending speakers')
+	ipcRenderer.send('save-spkrs', payload)
+
 }
