@@ -1,0 +1,1 @@
+document.getElementById('button-enterdim').addEventListener('click', function (event){ console.log('clicked')})

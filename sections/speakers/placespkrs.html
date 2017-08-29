@@ -1,0 +1,88 @@
+<template class="task-template">
+  <section id="placespkrs-section" class="section js-section u-category-menu">
+    <header class="section-header">
+    <style>
+      canvas {
+        position:block;
+        margin:0 auto;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        z-index:-1;
+      }
+    </style>
+      <div class="section-wrapper">
+      <h1>
+        Place Speakers
+      </h1>
+        <!-- <h1>
+          <svg class="section-icon"><use xlink:href="assets/img/icons.svg#icon-menu"></use></svg>
+          Customize Menus
+        </h1>
+        <h3>The <code>Menu</code> and <code>MenuItem</code> modules can be used to create custom native menus.</h3>
+
+        <p>There are two kinds of menus: the application (top) menu and context (right-click) menu.</p>
+
+        <p>Open the <a href="http://electron.atom.io/docs/api/menu">full API documentation<span class="u-visible-to-screen-reader">(opens in new window)</span></a> in your browser.</p> -->
+      </div>
+    </header>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <p> Please enter room dimensions below:</p>
+          <div>
+          Length: <input type="number" name="length" min="0">
+          </div>
+          <div>
+          Width: <input type="number" name="width" min="0">
+          </div>
+          <div>
+          Height: <input type="number" name="height" min="0">
+          </div>
+
+          <button type="button" id="button-enterdim"> Enter </button>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+          <button id="open-config-editor">Open Config Editor </button>
+<!--         <div class="demo-box"> -->
+<!--           <p> Hey </p> -->
+<!--           <script src="/home/sean/git-repos/speaker-placement-gui/main-process/place-speakers/gui.js"></script> -->
+<!--         <p>Hello</p> -->
+<!--           <div class="demo-controls">
+            <button class="demo-button" id="open-file-manager">View Demo</button>
+          </div>
+          <p>This demonstrates using the <code>shell</code> module to open the system file manager at a particular location.</p>
+          <p>Clicking the demo button will open your file manager at the root.</p>
+          <h5>Renderer Process</h5>
+          <pre><code data-path="renderer-process/native-ui/ex-links-file-manager/file-manager.js"></code></pre> -->
+<!--         </div> -->
+      </div>
+      
+    </div>
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="render-xml">Render to XML </button>
+      </div>
+    </div>
+<!--     <div class="demo">
+        <div class="demo-box" >
+            Hello
+        </div>
+      <div class="demo-wrapper">
+        <button id="context-menu-demo-toggle" class="js-container-target demo-toggle-button">Create a context menu
+          <div class="demo-meta u-avoid-clicks">Supports: Win, macOS, Linux <span class="demo-meta-divider">|</span> Process: Main</div>
+        </button>
+
+      </div>
+    </div> -->
+
+    <script type="text/javascript">
+      require('./renderer-process/placespkrs/place-speakers.js')
+    </script>
+
+  </section>
+</template>

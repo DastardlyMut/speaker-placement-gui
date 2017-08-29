@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<title>ImmerGo Speaker Placements</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/nativize.css">
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/about.css">
+  <link rel="stylesheet" href="assets/css/nav.css">
+  <link rel="stylesheet" href="assets/css/section.css">
+  <link rel="stylesheet" href="assets/css/demo.css">
+  <link rel="stylesheet" href="assets/css/github.css">
+
+
+  <link rel="import" href="sections/roomconf/roomconf.html">
+  <link rel="import" href="sections/avb/avb.html">
+  <link rel="import" href="sections/speakers/placespkrs.html">
+
+<!--   <link rel="import" href="sections/about.html">
+  <link rel="import" href="sections/windows/windows.html">
+  <link rel="import" href="sections/windows/crash-hang.html"> -->
+
+<!--   <link rel="import" href="sections/menus/shortcuts.html">
+  <link rel="import" href="sections/native-ui/ex-links-file-manager.html">
+  <link rel="import" href="sections/native-ui/notifications.html">
+  <link rel="import" href="sections/native-ui/dialogs.html">
+  <link rel="import" href="sections/native-ui/tray.html">
+  <link rel="import" href="sections/communication/ipc.html">
+  <link rel="import" href="sections/system/app-sys-information.html">
+  <link rel="import" href="sections/system/clipboard.html">
+  <link rel="import" href="sections/system/protocol-handler.html">
+  <link rel="import" href="sections/media/pdf.html">
+  <link rel="import" href="sections/media/desktop-capturer.html"> -->
+<!--   <style>
+    body {
+      color: #333;
+      text-align: center;
+      margin: 0px;
+      font-family: sans-serif;
+      background-color: #f3f3f3;
+    }
+    p {
+      margin: 11px;
+    }
+    .heading {
+      background-color: #e6e6e6;
+      text-align: center;
+      padding: 10px;
+      margin: 0px;
+    }
+    .heading img.logo {
+      height: 40px;
+    }
+    h1 {
+      margin: 15px;
+      font-size: 28px;
+    }
+    .card {
+      background-color: white;
+      margin: 15px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 2px 2px 10px #d4d4d4;
+    }
+    .card-heading {
+      margin: 0px;
+    }
+    .card-bottom {
+      margin-bottom: 0px;
+    }
+    .value-label {
+      margin-bottom: 5px;
+    }
+    .value-box {
+      color: #13736f;
+      font-size: 18px;
+      margin: 0px;
+      display: inline-block;
+      padding: 5px 50px;
+      background-color: #ececec;
+      border-radius: 3px;
+    }
+    .button {
+      outline: none;
+      border: none;
+      background-color: #13736f;
+      color: white;
+      border-radius: 5px;
+      font-size: 18px;
+      padding: 10px 50px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #288e8a;
+    }
+    .button:active {
+      background-color: #094e4b;
+    }
+  </style> -->
+</head>
+	<body>
+
+<!--   <div class="heading">
+    <img src="immersiveDSP.png" alt="immersiveDSP logo" class="logo">
+  </div>
+
+  <h1>ImmerGo Speaker XML generator</h1>  -->
+
+  <nav class="nav js-nav">
+    <header class="nav-header">
+      <h1 class="nav-title">ImmerGo Speaker Placement</h1>
+<!--       <svg class="nav-header-icon"><use xlink:href="assets/img/icons.svg#icon-electron"></use></svg> -->
+    </header>
+
+    <div class="nav-item u-category">
+      <h5 class="nav-category">
+        AVB Network
+      </h5>
+      <button type="button" id="button-avb" data-section="avb" class="nav-button">AVB Info</button>
+    </div>
+
+    <div class="nav-item u-category">
+      <h5 class="nav-category">
+<!--         <svg class="nav-icon"><use xlink:href="assets/img/icons.svg#icon-menu"></use></svg> -->
+        Room Layout
+      </h5>
+      <button type="button" id="button-room" data-section="roomconf" class="nav-button">Room Info </button>
+    </div>
+
+    <div class="nav-item u-category">
+      <h5 class="nav-category">
+        Speakers
+      </h5>
+      <button type="button" id="button-placespkr" data-section="placespkrs" class="nav-button">Place Speakers</button>
+    </div>
+
+    <footer class="nav-footer">
+      <button type="button" id="button-about" data-modal="about" class="nav-footer-button">About</button>
+    </footer>
+  </nav>
+
+  <main class="content js-content"></main>
+
+  <script>
+    require('./assets/imports')
+    require('./assets/xml-writer.js')
+    require('./assets/ex-links')
+    require('./assets/nav')
+    require('./assets/demo-btns')
+    require('./assets/code-blocks')
+    require('./assets/normalize-shortcuts')
+  </script>
+	</body>
+</html>
