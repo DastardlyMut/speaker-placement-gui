@@ -17,9 +17,10 @@ amplifiers: []                  // configuration contains one or more amplifiers
 
 
 //class for amplifier objects
-function Amplifier (macadr) {
+function Amplifier (macadr, noSpkrs) {
 this.speakers = [];             // Amplifier associated with mac address and speakers
 this.macadr = macadr;
+this.noSpkrs = noSpkrs;
 //this.present = false;           // Is the amplifier present in configuration?
 }
 
@@ -76,9 +77,11 @@ getID('save-macadr').addEventListener('click', createAmpObjects)
 function createAmpObjects(){
 	for (var i = 0; i < speakerConfig.amplifiers.length; i++){
 		var mac = getID("mac"+i).value
+		var noSpkrs = getID("no-speakers").value
 		console.log(mac)
+		console.log(noSpkrs)
 		speakerConfig.amplifiers[i].macadr = mac;
-		speakerConfig.amplifiers[i].speakers = getID("no-speakers").value
+		speakerConfig.amplifiers[i].noSpkrs = noSpkrs;
 	}
 
 	console.log('sending macs')

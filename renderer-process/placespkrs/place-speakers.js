@@ -23,6 +23,9 @@ btn_openConfigEditor.addEventListener('click', function (event) {
   win.loadURL(modalPath)
 
   win.show()
+  win.name = "config-editor"
+  // console.log(win.webContents)
+  ipcRenderer.send('add-window-array', win);
 })
 
 const btn_renderXML = getID('render-xml')

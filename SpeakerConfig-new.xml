@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+   <amplifier macadr = "00:00:00:00:00:00">
+      <speaker number = "1"  xpos = "148.7526044845581"  ypos = "146.00520849227905" zpos = "0"> </speaker>
+      <speaker number = "2"  xpos = "336.7526044845581"  ypos = "88.00520849227905" zpos = "0"> </speaker>
+      <speaker number = "3"  xpos = "393.7526044845581"  ypos = "246.00520849227905" zpos = "0"> </speaker>
+      <speaker number = "4"  xpos = "283.7526044845581"  ypos = "331.00520849227905" zpos = "0"> </speaker>
+      <speaker number = "5"  xpos = "87.7526044845581"  ypos = "236.00520849227905" zpos = "0"> </speaker>
+   </amplifier>
+   <amplifier macadr = "00:00:00:00:00:00">
+      <speaker number = "1"  xpos = "327.7526044845581"  ypos = "226.00520849227905" zpos = "0"> </speaker>
+      <speaker number = "2"  xpos = "437.7526044845581"  ypos = "154.00520849227905" zpos = "0"> </speaker>
+      <speaker number = "3"  xpos = "474.7526044845581"  ypos = "94.00520849227905" zpos = "0"> </speaker>
+   </amplifier>
+   <amplifier macadr = "00:00:00:00:00:00">
+   </amplifier>
+   <amplifier macadr = "00:00:00:00:00:00">
+   </amplifier>
+</config>

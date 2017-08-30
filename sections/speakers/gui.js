@@ -1,6 +1,9 @@
 //require("./p5.js")
 // require("./p5.dom.js")
 
+/*** Electon menus ***/
+
+
 /**** p5 function ****/
 var canvas;
 
@@ -11,11 +14,13 @@ var send_spkrVals;
 // execute once when the program begins
 
 function openConfig(){
-		
+
 }
 
+// Function to clear all speakers from canvas
 function clearConfig(){
-	speakers.splice(0, speakers.length)
+	speakers.splice(0,speakers.length)
+	speakerCount = 0;
 }
 
 function setup() {
@@ -27,9 +32,9 @@ function setup() {
 	origin = [(windowWidth-20)/2,(windowHeight-20)/2] 
 	stroke(255);     // Set line drawing color to white
 	frameRate(30);
+	// var c = color('hsl(269, 100%, 95%)')
 	background(color('hsl(269, 100%, 95%)'))
 	createGrid();
-
 	// Save Button
 	send_spkrVals = createButton('save');
   	send_spkrVals.position(19, 19);
@@ -41,9 +46,8 @@ function setup() {
  	// Clear Button
 	clear_config = createButton('clear');
   	clear_config.position(19, 19+50);
-	clear_config.mousePressed(clearConfig);
+ 	clear_config.mousePressed(clearConfig);
 }
-
 // The statements in draw() are executed until the 
 // program is stopped. Each statement is executed in 
 // sequence and after the last line is read, the first 

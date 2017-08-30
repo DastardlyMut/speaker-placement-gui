@@ -22,8 +22,9 @@ function handleSectionTrigger (event) {
   document.getElementById(sectionId).classList.add('is-shown')
 
   // Save currently active button in localStorage
-  const buttonId = event.target.getAttribute('id')
-  settings.set('activeSectionButtonId', buttonId)
+  
+  // const buttonId = event.target.getAttribute('id')
+  // settings.set('activeSectionButtonId', buttonId)
 }
 
 function activateDefaultSection () {
@@ -67,6 +68,12 @@ function displayAbout () {
 
 // Default to the view that was active the last time the app was open
 const sectionId = settings.get('activeSectionButtonId')
+// activateDefaultSection()
+// showMainContent()
+// displayAbout()
+// showMainContent()
+//   const section = document.getElementById(sectionId)
+//   if (section) section.click()
 if (sectionId) {
   showMainContent()
   const section = document.getElementById(sectionId)
