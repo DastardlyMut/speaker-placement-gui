@@ -11,6 +11,7 @@ var windowArray = [];
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+let editorWindow
 
 function onClosed() {
   // Dereference the window
@@ -58,15 +59,12 @@ app.on('activate', () => {
 
 app.on('ready', () => {
   mainWindow = createMainWindow();
+  editorWindow = createEditorWindow();
 });
 
-
-// My xml renderer code ...
 // Electron stuff
-
 const {ipcMain} = electron
 
-const {webContents} = electron
 // The speaker configuration object
 var speakerConfig = {
   amplifiers: []                                // configuration contains one or more amplifiers
@@ -88,26 +86,60 @@ function amplifier(macadr,noSpkrs){
 }
 
 
+// Config Editor
+function createEditorWindow(){
+  const modalPath = path.join('file://', __dirname, '/sections/speakers/config-editor.html')
+  editorWindow = new BrowserWindow({ width: 400, height: 320 })
+  editorWindow.loadURL(modalPath)
+  editorWindow.on('close', (event) => { 
+    console.log('closing')
+    // editorWin.hide()
+    event.preventDefault()
+    getWindow('config-editor').hide() 
+    // editorWindow = null;
+  })
+  console.log('editor window created')
+  editorWindow.name = "config-editor"
+  windowArray.push(editorWindow);
+  editorWindow.hide();
+}
+ 
 // Communication between processes
-
-ipcMain.on('add-window-array', (event,arg) =>{
-  console.log(arg)
-  // console.log(arg.webContents)
-  windowArray.push(arg)
-  console.log("window name " + arg.name)
-  console.log('added window to array')
-  console.log(windowArray[1].name)
-  console.log(windowArray[0].name)
-});
-
-ipcMain.on('update-config-editor', (event,arg) => {
-    console.log('update-config-editor');
-    //console.log(windowArray)
-    // console.log(webContents.fromId(0).name)
-    //console.log("webContents " + getWindow('config-editor').webContents)
-   // console.log(getWindow('config-editor').name)
-    //getWindow('config-editor').webContents.send('send-amp-info' , {msg:speakerConfig});
+ipcMain.on('open-config-editor', (event,arg) =>{
+  // console.log('here')
+  // console.log(windowArray)
+  // const modalPath = path.join('file://', __dirname, '/sections/speakers/config-editor.html')
+  // let editorWin = new BrowserWindow({ width: 400, height: 320 })
+  // editorWin.loadURL(modalPath)
+  // editorWin.on('close', (event) => { 
+  //   console.log('closing')
+  //   // editorWin.hide()
+  //   event.preventDefault()
+  //   editorWin.hide() })
+  // editorWin.name = "config-editor"
+  // editorWin.show();
+  // windowArray.push(editorWin);
+  //console.log(windowArray[1])
+  getWindow('config-editor').show()
 })
+
+
+// ipcMain.on('add-window-array', (event,arg) =>{
+//   console.log(arg)
+//   // console.log(arg.webContents)
+//   windowArray.push(arg)
+//   console.log("window name " + arg.name)
+//   console.log('added window to array')
+// });
+
+// ipcMain.on('update-config-editor', (event,arg) => {
+//     console.log('update-config-editor');
+//     //console.log(windowArray)
+//     // console.log(webContents.fromId(0).name)
+//     //console.log("webContents " + getWindow('config-editor').webContents)
+//    // console.log(getWindow('config-editor').name)
+//     //getWindow('config-editor').webContents.send('send-amp-info' , {msg:speakerConfig});
+// })
 
 function getWindow(windowName) {
   for (var i = 0; i < windowArray.length; i++) {
@@ -141,6 +173,7 @@ ipcMain.on('save-macadr', (event, arg) => {
 
 ipcMain.on('save-spkrs', (event, arg) => {
   /* Saving MAC addresses into speakerConfig */
+  speakers = [];
   // Unpack speakers into array
     for (var i = 0; i < arg.length; i++) {
         var x = arg[i].x;
@@ -170,31 +203,66 @@ ipcMain.on('render-xml', (event,arg)=> {
     console.log('render starting')
     // Create XML object containing correct tags and data
     // Preamble
-    fs.open('SpeakerConfig-new.xml', 'w' , function (err,file){
-      if (err) throw err;
-    })
+
+    // Create string to be printed to xml
     var spkno = 0;
-    fs.appendFile('SpeakerConfig-new.xml' , '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n', (err) => { if(err) throw err})
+    var string = "";
+    string += '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n'
+    //fs.appendFile('SpeakerConfig-new.xml' , '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n', (err) => { if(err) throw err})
     for (var i = 0; i < speakerConfig.amplifiers.length; i++){
       var mac = speakerConfig.amplifiers[i].macadr;
       spk_no = 0; 
-      console.log(mac)
-      fs.appendFile('SpeakerConfig-new.xml', 
-        '   <amplifier macadr = "' + mac + '">\n', (err) => { if(err) throw err})
+      // console.log(mac)
+      // fs.appendFile('SpeakerConfig-new.xml', 
+      //   '   <amplifier macadr = "' + mac + '">\n', (err) => { if(err) throw err})
+      string +=  '   <amplifier macadr = "' + mac + '">\n'; 
         for (var j = 0; j < speakerConfig.amplifiers[i].speakers.length; j++){
           var spk = speakerConfig.amplifiers[i].speakers[j];
           spk_no++;
           if (spk !== undefined){
             // var string = '      <speaker number = "' + spk.number + '"  xpos = "' + spk.x + '"  ypos = "' + spk.y + '" zpos = "' + spk.z + "\"> </speaker>\n"
-            var string = '      <speaker number = "' + spk_no + '"  xpos = "' + spk.x + '"  ypos = "' + spk.y + '" zpos = "' + spk.z + "\"> </speaker>\n"
+            string += '      <speaker number = "' + spk_no + '"  xpos = "' + spk.x + '"  ypos = "' + spk.y + '" zpos = "' + spk.z + "\"> </speaker>\n"
 
-              fs.appendFile('SpeakerConfig-new.xml', string, (err) => { if(err) throw err});
+            //  fs.appendFile('SpeakerConfig-new.xml', string, (err) => { if(err) throw err});
           }
         }
-      fs.appendFile('SpeakerConfig-new.xml', 
-        '   </amplifier>\n', (err) => { if(err) throw err} )
+      string += '   </amplifier>\n';
+      // fs.appendFile('SpeakerConfig-new.xml', 
+      //   '   </amplifier>\n', (err) => { if(err) throw err} )
     }
-    fs.appendFile('SpeakerConfig-new.xml' , '</config>\n', (err) => { if(err) throw err})
+    string += '</config>\n';
+    //fs.appendFile('SpeakerConfig-new.xml' , '</config>\n', (err) => { if(err) throw err})
+
+    console.log(speakerConfig.amplifiers)
+    fs.open('SpeakerConfig-new.xml', 'w+' , function (err,file){
+      if (err) throw err;
+    })
+    fs.writeFile('SpeakerConfig-new.xml', string, (err) =>{
+      if (err) throw err
+      console.log('SpeakerConfig-new.xml saved')
+    })
+    // var spkno = 0;
+    // fs.appendFile('SpeakerConfig-new.xml' , '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n', (err) => { if(err) throw err})
+    // for (var i = 0; i < speakerConfig.amplifiers.length; i++){
+    //   var mac = speakerConfig.amplifiers[i].macadr;
+    //   spk_no = 0; 
+    //   console.log(mac)
+    //   fs.appendFile('SpeakerConfig-new.xml', 
+    //     '   <amplifier macadr = "' + mac + '">\n', (err) => { if(err) throw err})
+    //     for (var j = 0; j < speakerConfig.amplifiers[i].speakers.length; j++){
+    //       var spk = speakerConfig.amplifiers[i].speakers[j];
+    //       spk_no++;
+    //       if (spk !== undefined){
+    //         // var string = '      <speaker number = "' + spk.number + '"  xpos = "' + spk.x + '"  ypos = "' + spk.y + '" zpos = "' + spk.z + "\"> </speaker>\n"
+    //         var string = '      <speaker number = "' + spk_no + '"  xpos = "' + spk.x + '"  ypos = "' + spk.y + '" zpos = "' + spk.z + "\"> </speaker>\n"
+
+    //           fs.appendFile('SpeakerConfig-new.xml', string, (err) => { if(err) throw err});
+    //       }
+    //     }
+    //   fs.appendFile('SpeakerConfig-new.xml', 
+    //     '   </amplifier>\n', (err) => { if(err) throw err} )
+    // }
+    // fs.appendFile('SpeakerConfig-new.xml' , '</config>\n', (err) => { if(err) throw err})
     console.log('xml finished rendering')
 })
 

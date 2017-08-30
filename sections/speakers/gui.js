@@ -21,6 +21,7 @@ function openConfig(){
 function clearConfig(){
 	speakers.splice(0,speakers.length)
 	speakerCount = 0;
+	console.log(speakers)
 }
 
 function setup() {
