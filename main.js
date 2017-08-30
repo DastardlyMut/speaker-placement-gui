@@ -42,6 +42,9 @@ function createMainWindow () {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null
+    // editorWindow = null
+    // windowArray = [];
+    app.quit()
   })
 }
 
@@ -49,6 +52,12 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('window-all-closed', app.quit);
+app.on('before-quit', () => {
+    mainWindow.removeAllListeners('close');
+    mainWindow.close();
 });
 
 app.on('activate', () => {
@@ -199,17 +208,26 @@ ipcMain.on('save-spkrs', (event, arg) => {
 var xml = require('xml')
 var fs = require('fs')
 
-ipcMain.on('render-xml', (event,arg)=> {
-    console.log('render starting')
-    // Create XML object containing correct tags and data
-    // Preamble
+ipcMain.on('render-xml', (event,arg)=> { 
+  // Render speakerConfig XML
+    if(speakerConfig.amplifiers.length > 0 && speakers.length > 0){
+        writeXML()
+        console.log('xml finished rendering')
+    } else if (speakers.length == 0 && speakerConfig.amplifiers.length > 0){
+        console.log("No speakers added!")
+        writeXML()
+    } else {
+        console.log("Please add your DACs")
+    }
+})
 
-    // Create string to be printed to xml
-    var spkno = 0;
-    var string = "";
-    string += '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n'
-    //fs.appendFile('SpeakerConfig-new.xml' , '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n', (err) => { if(err) throw err})
-    for (var i = 0; i < speakerConfig.amplifiers.length; i++){
+function writeXML(){
+
+  // Create string to be printed to xml
+  var spkno = 0;
+  var string = "";
+  string += '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n'
+  for (var i = 0; i < speakerConfig.amplifiers.length; i++){
       var mac = speakerConfig.amplifiers[i].macadr;
       spk_no = 0; 
       // console.log(mac)
@@ -241,32 +259,7 @@ ipcMain.on('render-xml', (event,arg)=> {
       if (err) throw err
       console.log('SpeakerConfig-new.xml saved')
     })
-    // var spkno = 0;
-    // fs.appendFile('SpeakerConfig-new.xml' , '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n', (err) => { if(err) throw err})
-    // for (var i = 0; i < speakerConfig.amplifiers.length; i++){
-    //   var mac = speakerConfig.amplifiers[i].macadr;
-    //   spk_no = 0; 
-    //   console.log(mac)
-    //   fs.appendFile('SpeakerConfig-new.xml', 
-    //     '   <amplifier macadr = "' + mac + '">\n', (err) => { if(err) throw err})
-    //     for (var j = 0; j < speakerConfig.amplifiers[i].speakers.length; j++){
-    //       var spk = speakerConfig.amplifiers[i].speakers[j];
-    //       spk_no++;
-    //       if (spk !== undefined){
-    //         // var string = '      <speaker number = "' + spk.number + '"  xpos = "' + spk.x + '"  ypos = "' + spk.y + '" zpos = "' + spk.z + "\"> </speaker>\n"
-    //         var string = '      <speaker number = "' + spk_no + '"  xpos = "' + spk.x + '"  ypos = "' + spk.y + '" zpos = "' + spk.z + "\"> </speaker>\n"
-
-    //           fs.appendFile('SpeakerConfig-new.xml', string, (err) => { if(err) throw err});
-    //       }
-    //     }
-    //   fs.appendFile('SpeakerConfig-new.xml', 
-    //     '   </amplifier>\n', (err) => { if(err) throw err} )
-    // }
-    // fs.appendFile('SpeakerConfig-new.xml' , '</config>\n', (err) => { if(err) throw err})
-    console.log('xml finished rendering')
-})
-
-
+}
 
 
 

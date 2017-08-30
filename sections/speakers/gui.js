@@ -73,6 +73,8 @@ function windowResized() {
 	background(color('hsl(269, 100%, 95%)'))
 }
 
+var sel_spk = -1;
+
 function mousePressed(){
 		//console.log('pressed')
 		if (mouseButton == RIGHT){
@@ -102,17 +104,35 @@ function mousePressed(){
 		} else if (mouseButton == LEFT){
 			for (var i = 0; i < speakerCount; i++){
 				speakers[i].clicked()
+				if(dist(mouseX,mouseY,speakers[i].cx,speakers[i].cy) < speakerDiameter)
+					sel_spk = i;
 			}
+			dragged = true;
 		}	
+		// console.log(dragged)
+		// console.log(sel_spk)
+}
+
+
+function mouseReleased(){
+	if (mouseButton == LEFT){
+		dragged = false;
+	}	
+	// console.log(dragged)
 }
 
 function mouseDragged(){
 	if(mouseButton == LEFT){
+		speakers[sel_spk].dragged()
+		// sel_spk = -1;
+		// if(dragged){
+
+		// }
 		// Check mouse isn't on speaker already
-		for (var i = 0; i <speakerCount; i++){
-			// speakers[i].dragged()
-			speakers[i].dragged()
-		}
+		// for (var i = 0; i <speakerCount; i++){
+		// 	// speakers[i].dragged()
+		// 	speakers[i].dragged()
+		// }
 	}
 	else if (mouseButton == RIGHT){
 		// create new speakers
@@ -145,7 +165,7 @@ function checkMouse(){
 	}
 	for (var i = 0; i < speakers.length; i++){
 		var d = dist(mouseX,mouseY,speakers[i].cx,speakers[i].cy)
-		if (d<speakerDiameter){
+		if (d<speakerDiameter/2){
 			res.flag = true;
 			res.idx = i;
 			console.log("mouse check result  " + res)
@@ -236,6 +256,8 @@ function Amplifier (macadr) {
 	this.macadr = macadr;
 }
 
+var dragged = false;
+
 var speakerDiameter = 11;
 // Class for speaker objects
 function Speaker(x,y,z,number) {
@@ -297,7 +319,7 @@ function Speaker(x,y,z,number) {
 
 	this.dragged = function(){
 		var d = dist(mouseX,mouseY,this.cx,this.cy)
-		if(d<speakerDiameter) {
+		if(d<speakerDiameter/2) {
 			this.cx = mouseX;
 			this.cy = mouseY;
 			console.log("speaker " + this.number)
