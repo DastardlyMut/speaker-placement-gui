@@ -76,7 +76,8 @@ const {ipcMain} = electron
 
 // The speaker configuration object
 var speakerConfig = {
-  amplifiers: []                                // configuration contains one or more amplifiers
+  amplifiers: [], 
+  roomdim : {}                    // configuration contains one or more amplifiers
 }
 
 var speakers = [];
@@ -114,6 +115,21 @@ function createEditorWindow(){
 }
  
 // Communication between processes
+
+ipcMain.on('button-enterdim' , (event,arg) =>{
+    console.log('enterDim')
+    speakerConfig.roomdim = arg;
+    speakerConfig.roomdim.length = parseInt(arg.length)
+    speakerConfig.roomdim.width = parseInt(arg.width)
+    speakerConfig.roomdim.height = parseInt(arg.height)
+    console.log(typeof(speakerConfig.roomdim.height))
+    console.log(speakerConfig.roomdim.height)
+    // console.log(arg)
+    // console.log(speakerConfig.roomdim.width)
+
+
+})
+
 ipcMain.on('open-config-editor', (event,arg) =>{
   // console.log('here')
   // console.log(windowArray)
@@ -129,6 +145,7 @@ ipcMain.on('open-config-editor', (event,arg) =>{
   // editorWin.show();
   // windowArray.push(editorWin);
   //console.log(windowArray[1])
+  // Change grid according to room
   getWindow('config-editor').show()
 })
 
@@ -177,7 +194,7 @@ ipcMain.on('save-macadr', (event, arg) => {
         }
   }
   console.log('DAC endpoints')
-  console.log(speakerConfig.amplifiers)
+  //console.log(speakerConfig.amplifiers)
 });
 
 ipcMain.on('save-spkrs', (event, arg) => {
@@ -185,11 +202,16 @@ ipcMain.on('save-spkrs', (event, arg) => {
   speakers = [];
   // Unpack speakers into array
     for (var i = 0; i < arg.length; i++) {
+
+        // Unpack GUI speaker position
         var x = arg[i].x;
         var y = arg[i].y;
         var z = arg[i].z;
         var no = arg[i].no;
         
+        // Convert into real-life position
+
+
         speakers.push(new speaker(x,y,z,no));
     }
 
@@ -251,7 +273,7 @@ function writeXML(){
     string += '</config>\n';
     //fs.appendFile('SpeakerConfig-new.xml' , '</config>\n', (err) => { if(err) throw err})
 
-    console.log(speakerConfig.amplifiers)
+    //console.log(speakerConfig.amplifiers)
     fs.open('SpeakerConfig-new.xml', 'w+' , function (err,file){
       if (err) throw err;
     })

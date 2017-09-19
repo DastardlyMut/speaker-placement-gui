@@ -1,6 +1,6 @@
 //require("./p5.js")
 // require("./p5.dom.js")
-
+//var smalltalk = require('smalltalk')
 /*** Electon menus ***/
 
 
@@ -35,7 +35,9 @@ function setup() {
 	frameRate(30);
 	// var c = color('hsl(269, 100%, 95%)')
 	background(color('hsl(269, 100%, 95%)'))
+	// resolution = prompt('How many quare meters is your grid?')
 	createGrid();
+	//drawGrid();
 	// Save Button
 	send_spkrVals = createButton('save');
   	send_spkrVals.position(19, 19);
@@ -48,6 +50,14 @@ function setup() {
 	clear_config = createButton('clear');
   	clear_config.position(19, 19+50);
  	clear_config.mousePressed(clearConfig);
+
+ 	show_coords = createButton('showCoords');
+ 	show_coords.position(19,19+75)
+ 	show_coords.mousePressed(showCoords)
+
+ 	wfs_array = createButton('wfs');
+ 	wfs_array.position(19, 19+100);
+ 	wfs_array.mousePressed(wfsConfig);
 }
 // The statements in draw() are executed until the 
 // program is stopped. Each statement is executed in 
@@ -56,9 +66,13 @@ function setup() {
 function draw() { 
 	background(color('hsl(269, 100%, 95%)'))
 	showGrid()
+	//drawGrid()
 	for (var i = 0; i < speakers.length;i++){
 		speakers[i].display();
+		// WFS_module[i].display()
 	}
+
+
 }
 
 function windowResized() {
@@ -85,6 +99,14 @@ function mousePressed(){
 				// If mouse not on speaker add new speaker object to the array
 				speakerCount++
 				console.log('speaker ' + speakerCount)
+				console.log('pos   ' + mouseX + '   ' + mouseY )
+				// Offset speaker position so centre is origin
+				var x = mouseX - (windowWidth-20)/2
+				var y = -(mouseY - (windowHeight-20)/2)
+
+				console.log('x   ' + x)
+				console.log('y   ' + y)
+
 				speakers.push(new Speaker(mouseX,mouseY,0,speakerCount))
 				speakers[speakerCount-1].display();
 			} else {
@@ -176,9 +198,13 @@ function checkMouse(){
 }
 
 
+/* Variable for speakerConfig room dimensions */
 
 /* Draw Grid */
-var resolution = 15;
+
+// var resolutionx = 6;
+// var resolutiony = 6;
+var resolution = 25
 
 var grid = [];
 var rows = 0;
@@ -189,6 +215,9 @@ function Block() {
 	this.height = (windowHeight-20) / resolution;
 	this.width = (windowWidth-20) / resolution;
 	this.color = 255;
+
+	// console.log('height   ' + this.height)
+	// console.log('width    ' + this.width)
 
 	this.x = nextRow * this.width;
 	this.y = rows * this.height;
@@ -202,7 +231,7 @@ function Block() {
 
 	this.show = function() {
 		stroke(0);
-		strokeWeight(1);
+		strokeWeight(0.5);
 		fill(color('hsl(269, 100%, 95%)'));
 		rect(this.x, this.y, this.width, this.height);
 	}
@@ -233,14 +262,19 @@ function resizeGrid(){
 function createGrid() {
 	nextRow = 0;
 	rows = 0;
+ 	 
 	for(var i = 0; i < resolution * resolution; i++)
 	{
 		new Block();
 	}
 }
 
-var showText = true;
+function showCoords(){
+	showCoord = ((showCoord == false) ? 1 : 0);
+}
 
+var showText = true;
+var showCoord = true;
 // The speaker configuration object
 var speakerConfig = {
 	amplifiers: []                  // configuration contains one or more amplifiers
@@ -248,6 +282,7 @@ var speakerConfig = {
 
 
 var speakers = []
+var WFS_module = [];
 // var drawSpeakers = [];
 var speakerCount = 0;
 //class for amplifier objects
@@ -258,16 +293,20 @@ function Amplifier (macadr) {
 
 var dragged = false;
 
-var speakerDiameter = 11;
-// Class for speaker objects
+var speakerDiameter = 10;
+// Class for single speaker objects
 function Speaker(x,y,z,number) {
-	this.x = x;                   // the position of the speaker on canvas
-	this.y = y;
-	this.z = z;
 
 	this.cx = x;                   // the position of the speaker on canvas
 	this.cy = y;
 	this.cz = z;
+
+	this.x = Math.round((x - (windowWidth-20)/2)/25);                   // the position of speaker in real life
+	this.y = -Math.round((y - (windowHeight-20)/2)/25);
+	this.z = z;
+
+	console.log("speaker pos: " + this.x + "  " + this.y)
+
 	this.number = number;
 	this.col = color(204,101,192)
 	this.diameter = speakerDiameter;
@@ -294,8 +333,14 @@ function Speaker(x,y,z,number) {
 		if(showText){
 			// if (this.number > 9) text(this.number,this.x-6,this.y+4)
 			// else text(this.number,this.x-3,this.y+4)
+			// Display number
 			if (this.number > 9) text(this.number,this.cx-6,this.cy+4)
 			else text(this.number,this.cx-3,this.cy+4)
+			// Display Coord
+			if (showCoord){
+				textSize(10)
+				text("(" + Math.round(this.x) + ", " + Math.round(this.y) + ")",this.cx-15,this.cy+20)
+			}
 		}
 	}
 
@@ -319,7 +364,11 @@ function Speaker(x,y,z,number) {
 
 	this.dragged = function(){
 		var d = dist(mouseX,mouseY,this.cx,this.cy)
-		if(d<speakerDiameter/2) {
+		if(d<speakerDiameter*2) {
+
+			this.x = Math.round((mouseX - (windowWidth-20)/2)/25)
+			this.y = -Math.round((mouseY - (windowHeight-20)/2)/25)
+
 			this.cx = mouseX;
 			this.cy = mouseY;
 			console.log("speaker " + this.number)
@@ -327,6 +376,31 @@ function Speaker(x,y,z,number) {
 	}
 }
 	
+// Class for WFS speaker array
+function WFSarray(x,y,z,noSpk,spc){
+	this.ox = x; 
+	this.oy = y;
+	this.oz = z;
+	this.noSpk = noSpk
+	this.spacing = spc
+
+	this.display = function(){
+	  // Set colors
+		fill(0);
+		stroke(127, 63, 120);
+		line(this.ox-20,this.oy,this,ox+20,this.oy)
+		// ellipse(this.ox,this.oy,this.diameter,this.diameter)
+		fill(0)
+		if(showText){
+			// if (this.number > 9) text(this.number,this.x-6,this.y+4)
+			// else text(this.number,this.x-3,this.y+4)
+			text(this.noSpk,this.ox-3,this.oy+4)
+		}
+	}
+
+	// this.speakers = [];
+}
+
 // function deleteSpkrs(){
 // 	drawSpeakers.splice(0,drawSpeakers.length);
 // }
@@ -336,6 +410,15 @@ function Speaker(x,y,z,number) {
 // 		drawSpeakers.push(speakers[i]);
 // 	}
 // }
+
+function wfsConfig(){
+	// render linear array of 8 speakers
+	// WFS_module.push(new WFSarray((windowWidth-20)/2, (windowHeight-20)/2,8,0.2))
+
+
+
+}
+
 
 function resizeSpkrs(){
 	speakerDiameter *= (canvas_size[0][0]/canvas_size[1][0]);
@@ -367,6 +450,9 @@ function saveConfig(){
 		spk.y = speakers[i].y;
 		spk.z = speakers[i].z;
 		spk.no = speakers[i].number;
+
+		// offset speaker positions according to canvas dimensions
+
 
 		payload.push(spk);
 	}

@@ -98,85 +98,36 @@ function getID(id){
 	return document.getElementById(id);
 }
 
-/* Main code */
-// let editorWin = new BrowserWindow({ width: 400, height: 320 })
-// editorWin.hide()
-// editorWin.on('close', function () { editorWin.hide() })
-// editorWin.onbeforeunload = function (e) { 
-//   return false}
-// open-config-editor handler
+const btn_enterDim = getID('button-enterdim');
+
+btn_enterDim.addEventListener('click', function(event){
+    // Get values from button
+    var length = getID('length-box').value
+    var height = getID('height-box').value
+    var width = getID('width-box').value
+    
+    console.log(length)
+    console.log(height)
+    console.log(width)
+    var roomDim = {
+      'length' : length,
+      'width' : width,
+      'height' : height
+    }
+    console.log(roomDim)
+    // Send values to main process
+    ipcRenderer.send('button-enterdim',roomDim)
+})
 
 const btn_openConfigEditor = getID('open-config-editor')
 
-// const modalPath = path.join('file://', __dirname, '../../sections/speakers/config-editor.html')
-// let editorWin = new BrowserWindow({ width: 400, height: 320 })
-// editorWin.loadURL(modalPath)
-// editorWin.on('close', (event) => { 
-//   console.log('closing')
-//   // editorWin.hide()
-//   event.preventDefault()
-//   editorWin.hide() })
-// editorWin.name = "config-editor"
-// win.setMenu(menu)  
-
-// window.addEventListener('contextmenu', (e) => {
-//   e.preventDefault()
-//   menu.popup(remote.getCurrentWindow())
-// }, false)
-// console.log('show window')
-// editorWin.hide()
-
-// ipcRenderer.send('add-window-array', editorWin);
-// const modalPath = path.join('file://', __dirname, '../../sections/speakers/config-editor.html')
-// let editorWin = new BrowserWindow({ width: 400, height: 320 })
-// editorWin.loadURL(modalPath)
-// editorWin.hide()
-// editorWin.on('close', function () { 
-//   // preventDefault()
-//   editorWin.hide() })
-// editorWin.onbeforeunload = function (e){
-//   console.log('here')
-//   return false
-// }
-// editorWin.onbeforeunload = (e) => {
-//   var answer = confirm('Do you really want to close the application?');
-//   e.returnValue = answer;  // this will *prevent* the closing no matter what value is passed
-//   if(answer) { win.destroy(); }  // this will close the app
-// };
-// editorWin.name = "config-editor"
-// ipcRenderer.send('add-window-array', editorWin);
-
-//var windowOpen = false;
-
 btn_openConfigEditor.addEventListener('click', function (event) {
-      // const modalPath = path.join('file://', __dirname, '../../sections/speakers/config-editor.html')
-      // let editorWin = new BrowserWindow({ width: 400, height: 320 })
-      // editorWin.loadURL(modalPath)
-      // editorWin.on('close', function (event) { 
-      //   console.log(event)
-      //   event.preventDefault()
-      //   editorWin.hide() })
-      // editorWin.name = "config-editor"
-      // // win.setMenu(menu)  
-
-      // // window.addEventListener('contextmenu', (e) => {
-      // //   e.preventDefault()
-      // //   menu.popup(remote.getCurrentWindow())
-      // // }, false)
       ipcRenderer.send('open-config-editor')
-      // console.log('show window')
-      // editorWin.show()
 })
 
 const btn_renderXML = getID('render-xml')
 
 btn_renderXML.addEventListener('click', function (event) {
-  //const modalPath = path.join('file://', __dirname, '../../sections/speakers/config-editor.html')
-  // let win = new BrowserWindow({ width: 400, height: 320 })
-  // win.on('close', function () { win = null })
-  // win.loadURL(modalPath)
-
-  // win.show()
   // Call XML renderer
   ipcRenderer.send('render-xml');
 })
