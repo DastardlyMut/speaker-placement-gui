@@ -21,7 +21,9 @@ function openConfig(){
 function clearConfig(){
 	speakers.splice(0,speakers.length)
 	speakerCount = 0;
+	WFS_module.splice(0,WFS_module.length)
 	console.log(speakers)
+	console.log(WFS_module)
 }
 
 function setup() {
@@ -69,8 +71,13 @@ function draw() {
 	//drawGrid()
 	for (var i = 0; i < speakers.length;i++){
 		speakers[i].display();
-		// WFS_module[i].display()
 	}
+
+	for (var j = 0; j < WFS_module.length;j++){
+		WFS_module[j].display();
+	}
+
+
 
 
 }
@@ -94,7 +101,8 @@ function mousePressed(){
 		if (mouseButton == RIGHT){
 			// Check mouse is speaker is not already being dragged
 			// check if mouse position on speaker
-			var onSpkr = checkMouse();
+			var onSpkr = checkMouseSpkr();
+			// var onWFS = checkMouseWFS();
 			if (!onSpkr.flag){
 				// If mouse not on speaker add new speaker object to the array
 				speakerCount++
@@ -128,6 +136,14 @@ function mousePressed(){
 				speakers[i].clicked()
 				if(dist(mouseX,mouseY,speakers[i].cx,speakers[i].cy) < speakerDiameter)
 					sel_spk = i;
+					console.log("on speaker")
+			}
+			for (var j = 0; j < WFS_module.length; j++){
+				WFS_module[j].clicked()
+				if (mouseX > WFS_module[j].ox-15 && mouseX < WFS_module[j].ox-15 + 30 && mouseY > WFS_module[j].oy - 5 && mouseY < WFS_module[j].oy-5+10) {
+					sel_WFS = j;
+					console.log("on WFS")
+				}
 			}
 			dragged = true;
 		}	
@@ -138,6 +154,8 @@ function mousePressed(){
 
 function mouseReleased(){
 	if (mouseButton == LEFT){
+		sel_spk = -1;
+		sel_WFS = -1;
 		dragged = false;
 	}	
 	// console.log(dragged)
@@ -145,7 +163,17 @@ function mouseReleased(){
 
 function mouseDragged(){
 	if(mouseButton == LEFT){
-		speakers[sel_spk].dragged()
+		// try {
+		console.log("spk   " + sel_spk)
+		console.log("spk   " + sel_WFS)
+		if(sel_spk>=0)
+			speakers[sel_spk].dragged()
+		else(sel_WFS>=0)
+			WFS_module[sel_WFS].dragged()
+
+		// } catch (e) {
+		// 	console.log('no speaker selected')
+		// }
 		// sel_spk = -1;
 		// if(dragged){
 
@@ -155,6 +183,7 @@ function mouseDragged(){
 		// 	// speakers[i].dragged()
 		// 	speakers[i].dragged()
 		// }
+
 	}
 	else if (mouseButton == RIGHT){
 		// create new speakers
@@ -180,7 +209,7 @@ function mouseDragged(){
 // }
 
 // Function to check if mouse on speaker
-function checkMouse(){
+function checkMouseSpkr(){
 	var res = {
 		flag : false,
 		idx : -1
@@ -197,6 +226,22 @@ function checkMouse(){
 	return res;
 }
 
+function checkMouseWFS(){
+	var res = {
+		flag : false,
+		idx : -1
+	}
+	for (var i = 0; i < WFS_module.length; i++){
+		var d = dist(mouseX,mouseY,WFS_module[i].ox,WFS_module[i].oy)
+		if (d<speakerDiameter/2){
+			res.flag = true;
+			res.idx = i;
+			console.log("mouse check result  " + res)
+			return res;
+		}
+	}
+	return res;
+}
 
 /* Variable for speakerConfig room dimensions */
 
@@ -204,7 +249,7 @@ function checkMouse(){
 
 // var resolutionx = 6;
 // var resolutiony = 6;
-var resolution = 25
+var resolution = 30
 
 var grid = [];
 var rows = 0;
@@ -293,7 +338,7 @@ function Amplifier (macadr) {
 
 var dragged = false;
 
-var speakerDiameter = 10;
+var speakerDiameter = 8;
 // Class for single speaker objects
 function Speaker(x,y,z,number) {
 
@@ -378,26 +423,65 @@ function Speaker(x,y,z,number) {
 	
 // Class for WFS speaker array
 function WFSarray(x,y,z,noSpk,spc){
+	console.log(x + "  " + y + "  " + z)
 	this.ox = x; 
 	this.oy = y;
 	this.oz = z;
 	this.noSpk = noSpk
 	this.spacing = spc
 
+	// this.x = Math.round((x - (windowWidth-20)/2)/25);                   // the position of speaker in real life
+	this.x = x;
+
+	this.y = -Math.round((y - (windowHeight-20)/2)/25);
+	this.z = z;
+
+	console.log("WFS x " + this.x)
 	this.display = function(){
 	  // Set colors
-		fill(0);
+		fill(127,63,129);
+		strokeWeight(2)
 		stroke(127, 63, 120);
-		line(this.ox-20,this.oy,this,ox+20,this.oy)
+		//line(this.ox-20,this.oy,this.ox+20,this.oy)
+		rect(this.ox-25,this.oy-5, 50, 10)
 		// ellipse(this.ox,this.oy,this.diameter,this.diameter)
-		fill(0)
-		if(showText){
-			// if (this.number > 9) text(this.number,this.x-6,this.y+4)
-			// else text(this.number,this.x-3,this.y+4)
-			text(this.noSpk,this.ox-3,this.oy+4)
+		if(showCoords){
+			stroke(0)
+			fill(0)
+			textSize(10)
+			text(this.noSpk,this.ox-3,this.oy+15)
 		}
 	}
 
+	this.move = function(){
+	    this.ox *= canvas_size[0][0]/canvas_size[1][0];
+		this.oy *= canvas_size[0][1]/canvas_size[1][1];
+		this.diameter = speakerDiameter;
+		console.log("cx:  " + this.ox)
+		console.log("cy:  " + this.oy)
+	}
+
+
+	this.clicked = function(){
+		if (mouseX > this.ox-15 && mouseX < this.ox-15 + 30 && mouseY > this.oy-5 && mouseY < this.oy-5+10) {
+			this.col = color(255,255,255)
+			console.log("clicked")
+		}
+		// console.log('this object has been pressed')
+	}
+
+	this.dragged = function(){
+		//var x_d = rectX
+		//if (mouseX > this.ox-15 && mouseX < this.ox-15 + 30 && mouseY > this.oy -5 && mouseY < this.oy-5 +10) {
+			this.x = Math.round((mouseX - (windowWidth-20)/2)/25)
+			this.y = -Math.round((mouseY - (windowHeight-20)/2)/25)
+
+			this.ox = mouseX;
+			this.oy = mouseY;
+			console.log("dragging WFS")
+			//console.log("wfs array " + this.number)
+		//}
+	}
 	// this.speakers = [];
 }
 
@@ -413,7 +497,10 @@ function WFSarray(x,y,z,noSpk,spc){
 
 function wfsConfig(){
 	// render linear array of 8 speakers
-	// WFS_module.push(new WFSarray((windowWidth-20)/2, (windowHeight-20)/2,8,0.2))
+	console.log("added WFS")
+	var x = (windowWidth-20)/2;
+	var y = (windowHeight-20)/2
+	WFS_module.push(new WFSarray(x, y,0,8,0.05))
 
 
 
@@ -426,6 +513,11 @@ function resizeSpkrs(){
 	for (var i = 0; i < speakers.length; i++){
 		speakers[i].move()
 	}
+
+	for (var j = 0; j < WFS_module.length; j++){
+		WFS_module[j].move()
+	}
+
 	// deleteSpkrs()
 	// createSpkrs()
 }
