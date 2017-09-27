@@ -10,14 +10,15 @@
     "email": "",
     "url": ""
   },
-  "main" : "main.js",
+  "main": "main.js",
   "scripts": {
     "test": "xo",
     "start": "electron . ",
     "build": "electron-packager . --out=dist --asar --overwrite --all"
   },
   "dependencies": {
-    "electron-debug": "^1.0.0"
+    "electron-debug": "^1.0.0",
+    "electron-localshortcut": "^2.0.2"
   },
   "devDependencies": {
     "devtron": "^1.1.0",

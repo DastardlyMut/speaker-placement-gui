@@ -8,7 +8,8 @@
 var canvas;
 
 var canvas_size =[]
-var origin;
+var origin = {coords : [0,0], size: 5 }
+
 var send_spkrVals;
 // The statements in the setup() function 
 // execute once when the program begins
@@ -32,7 +33,9 @@ function setup() {
 					[(windowWidth-20),(windowHeight-20)]]
 	canvas =  createCanvas(canvas_size[0][0], canvas_size[0][1]); 
 	canvas.parent('config-canvas'); 
-	origin = [(windowWidth-20)/2,(windowHeight-20)/2] 
+	canvas.mouseWheel(mouseScroll);
+	origin.coords = [(windowWidth-20)/2,(windowHeight-20)/2] 
+	origin.size = 5;
 	stroke(255);     // Set line drawing color to white
 	frameRate(30);
 	// var c = color('hsl(269, 100%, 95%)')
@@ -82,12 +85,17 @@ function draw() {
 
 }
 
+function zoomCanvas(){
+	console.log('zoom in canvas')
+}
+
 function windowResized() {
 	canvas_size[1] = canvas_size[0];
 	canvas_size[0] = [(windowWidth-20),(windowHeight-20)]
 
-	origin = [(windowWidth-20)/2,(windowHeight-20)/2] 
-	console.log(origin);
+	origin.coords = [(windowWidth-20)/2,(windowHeight-20)/2]
+	origin.size *= canvas_size[0][1]/canvas_size[1][1] 
+	//console.log(origin);
 	resizeCanvas(windowWidth-20, windowHeight-20);
 	resizeGrid()
 	resizeSpkrs()
@@ -196,6 +204,38 @@ function mouseDragged(){
 	}
 }
 
+//var scroll_active = false;
+
+function mouseScroll(event){
+	console.log('mouse scrolled')
+	var onSpkr = checkMouseSpkr();
+	if(onSpkr.flag){
+		console.log("changing z coords of speaker " + onSpkr.idx)
+		speakers[onSpkr.idx].mouseWheel(event);
+		console.log("z cooord  " + speakers[onSpkr.idx].z)
+	}
+	else {
+		// zoom in on canvas
+
+	}
+	// console.log('mouse scrolled')
+	// scroll_active = true;
+	// if (keyCode == ALT) {
+	// 	console.log("alt + scroll")
+	// }
+
+}
+
+// Handle keyboard presses
+function keyPressed(){
+	// switch(keyCode && scroll_active){
+	// 	case ALT:
+	// 		console.log('Pressed alt')
+	// 		break;
+	// }
+
+}
+
 // function mouseClicked(){
 // 	console.log('clicked')
 // }
@@ -219,7 +259,7 @@ function checkMouseSpkr(){
 		if (d<speakerDiameter/2){
 			res.flag = true;
 			res.idx = i;
-			console.log("mouse check result  " + res)
+			//console.log("mouse check result  " + res)
 			return res;
 		}
 	}
@@ -254,6 +294,13 @@ var resolution = 30
 var grid = [];
 var rows = 0;
 var nextRow = 0;
+
+
+
+
+
+
+
 
 // A grid block
 function Block() {
@@ -292,7 +339,7 @@ function showGrid() {
 		grid[i].show();
 	}
 	fill(color('hsl(0, 100%, 95%)'))
-	ellipse(Math.floor(origin[0]),Math.round(origin[1]),10)
+	ellipse(Math.floor(origin.coords[0]),Math.round(origin.coords[1]),origin.size)
 }
 
 function deleteGrid(){
@@ -330,6 +377,7 @@ var speakers = []
 var WFS_module = [];
 // var drawSpeakers = [];
 var speakerCount = 0;
+
 //class for amplifier objects
 function Amplifier (macadr) {
 	this.speakers = [];             // Amplifier associated with mac address and speakers
@@ -339,6 +387,8 @@ function Amplifier (macadr) {
 var dragged = false;
 
 var speakerDiameter = 8;
+
+
 // Class for single speaker objects
 function Speaker(x,y,z,number) {
 
@@ -353,7 +403,9 @@ function Speaker(x,y,z,number) {
 	console.log("speaker pos: " + this.x + "  " + this.y)
 
 	this.number = number;
+	// colorMode(HSL,100)
 	this.col = color(204,101,192)
+	// this.col = color("hsla(297,57,43,1)")
 	this.diameter = speakerDiameter;
 
 	// Canvas positions of speakers
@@ -402,7 +454,7 @@ function Speaker(x,y,z,number) {
 	this.clicked = function(){
 		var d = dist(mouseX,mouseY,this.cx,this.cy);
 		if (d<speakerDiameter){
-			this.col = color(255,255,255)
+			//this.col = color(255,255,255)
 		}
 		// console.log('this object has been pressed')
 	}
@@ -417,6 +469,23 @@ function Speaker(x,y,z,number) {
 			this.cx = mouseX;
 			this.cy = mouseY;
 			console.log("speaker " + this.number)
+		}
+	}
+
+	this.mouseWheel = function(event){
+		if(event.deltaY < 0){
+			// increment z and increase lightness of colour
+			console.log(this.col.levels)
+			this.col.levels[0] += 5;
+			this.col.levels[1] += 5;
+			this.col.levels[2] += 5;
+			this.z += 1
+		}
+		else {
+			this.col.levels[0] -= 5;
+			this.col.levels[1] -= 5;
+			this.col.levels[2] -= 5;
+			this.z -= 1
 		}
 	}
 }
@@ -439,15 +508,15 @@ function WFSarray(x,y,z,noSpk,spc){
 	console.log("WFS x " + this.x)
 	this.display = function(){
 	  // Set colors
-		fill(127,63,129);
+		fill(color(204,101,192));
 		strokeWeight(2)
 		stroke(127, 63, 120);
 		//line(this.ox-20,this.oy,this.ox+20,this.oy)
 		rect(this.ox-25,this.oy-5, 50, 10)
 		// ellipse(this.ox,this.oy,this.diameter,this.diameter)
 		if(showCoords){
-			stroke(0)
 			fill(0)
+			strokeWeight(1)
 			textSize(10)
 			text(this.noSpk,this.ox-3,this.oy+15)
 		}

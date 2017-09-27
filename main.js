@@ -72,7 +72,8 @@ app.on('ready', () => {
 });
 
 // Electron stuff
-const {ipcMain} = electron
+const {ipcMain} = electron // for interprocess communication
+const electronLocalshortcut = require('electron-localshortcut') // for local shortcuts
 
 // The speaker configuration object
 var speakerConfig = {
@@ -111,11 +112,27 @@ function createEditorWindow(){
   console.log('editor window created')
   editorWindow.name = "config-editor"
   windowArray.push(editorWindow);
+  // editor window shortcuts
+  electronLocalshortcut.register(editorWindow, 'Alt+A', () => {
+        console.log('You pressed alt & A');
+    });
+
+  electronLocalshortcut.register(editorWindow, 'Alt+A', () => {
+        console.log('You pressed alt & A');
+    });
+
+
+  //
+
   editorWindow.hide();
+
+
 }
  
-// Communication between processes
 
+
+
+// Communication between processes
 ipcMain.on('button-enterdim' , (event,arg) =>{
     console.log('enterDim')
     speakerConfig.roomdim = arg;

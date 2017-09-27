@@ -3,6 +3,9 @@ To do for ImmerSpace:
 
 - Get WFS speaker arrays working
 	-> Need to figure out dragging rectangle
+	-> manual rotate by dragging mouse + typing in value
+	-> enable different WFS configs: circular, ellipsical, rectangular
+
 - Need to make config-editor window remember speaker config-editor		| Done (by moving calls to mainWindow)
 - Only one config-editor can be created at any time.
 	| Done (by creating windows once and then show and hiding) accordingly)
@@ -12,10 +15,12 @@ To do for ImmerSpace:
 - Need to fix amps updating speakers if speakers filled in before amps
 - Need to figure out how to assign speakers to amps
 	-> Colour coding
-- Need to implement WFS bar
+- Need to implement WFS bar | done
 - Need to implement room dimension edits
 	-> Grid needs to assign to this
-	-> 
+	-> assign space and then build room objects within space
+
+- Correct the context menus	
 
 - Consider changing grid function so it draws lines instead of single rectangles. -- YES
 	-> Need to make it 
